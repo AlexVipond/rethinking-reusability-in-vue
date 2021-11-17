@@ -6,7 +6,7 @@
     v-slot="{ bindings, active, activate, selected, select }"
   >
     <ul
-      v-bind)="bindings"
+      v-bind="bindings"
       class="
         w-full h-96
         flex flex-col gap-3 overflow-scroll
