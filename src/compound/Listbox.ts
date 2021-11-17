@@ -1,4 +1,7 @@
-import { defineComponent, h, provide, inject, ref, watch, computed, onMounted, onBeforeUpdate } from 'vue'
+import {
+  defineComponent, provide, inject,
+  ref, watch, computed, onMounted, onBeforeUpdate
+} from 'vue'
 import type { PropType } from 'vue'
 
 const ListboxSymbol = Symbol('Listbox')
@@ -25,7 +28,8 @@ export const Listbox = defineComponent({
     onBeforeUpdate(() => optionsElements.value = [])
 
     const ids = ref([])
-    onMounted(() => ids.value = optionsElements.value.map(() => `compound-listbox-option-${totalIds++}`))
+    onMounted(() => ids.value = optionsElements.value
+      .map(() => 'compound-listbox-option-' + totalIds++))
     
     const active = ref(0)
     const ariaActivedescendant = computed(() => ids.value[active.value])
@@ -91,15 +95,13 @@ export const Listbox = defineComponent({
       tabindex: -1,
     }))
 
-    return () => h(
-      () => slots.default({
-        bindings: bindings.value,
-        active,
-        activate,
-        selected,
-        select,
-      })
-    )
+    return () => slots.default({
+      bindings: bindings.value,
+      active,
+      activate,
+      selected,
+      select,
+    })
   }
 })
 
@@ -127,47 +129,45 @@ export const ListboxOption = defineComponent({
     
     const id = computed(() => ids.value[index])
 
-    return () => h(
-      () => slots.default({
-        bindings: {
-          role: 'option',
-          id,
-          'aria-selected': isSelected(index),
-          tabindex: isSelected(index) ? 0 : -1,
-          ref: el => storeOptionsElement(index, el),
-          onMouseenter: () => activate(index),
-          onClick: () => select(index),
-          onKeydown: event => {
-            switch (event.key) {
-              case 'ArrowUp':
-                event.preventDefault()
-                if (event.metaKey) {
-                  activate(0)
-                  break
-                }
-                activatePrevious(index)
+    return () => slots.default({
+      bindings: {
+        role: 'option',
+        id,
+        'aria-selected': isSelected(index),
+        tabindex: isSelected(index) ? 0 : -1,
+        ref: el => storeOptionsElement(index, el),
+        onMouseenter: () => activate(index),
+        onClick: () => select(index),
+        onKeydown: event => {
+          switch (event.key) {
+            case 'ArrowUp':
+              event.preventDefault()
+              if (event.metaKey) {
+                activate(0)
                 break
-              case 'ArrowDown':
-                event.preventDefault()
-                if (event.metaKey) {
-                  activate(options.length - 1)
-                  break
-                }
-                activateNext(index)
+              }
+              activatePrevious(index)
+              break
+            case 'ArrowDown':
+              event.preventDefault()
+              if (event.metaKey) {
+                activate(options.length - 1)
                 break
-              case 'Enter':
-              case ' ':
-                event.preventDefault()
-                select(index)
-                break
-            }
-          },
+              }
+              activateNext(index)
+              break
+            case 'Enter':
+            case ' ':
+              event.preventDefault()
+              select(index)
+              break
+          }
         },
-        isActive: () => isActive(index),
-        isSelected: () => isSelected(index),
-        activatePrevious: () => activatePrevious(index),
-        activateNext: () => activateNext(index),
-      })
-    )
+      },
+      isActive: () => isActive(index),
+      isSelected: () => isSelected(index),
+      activatePrevious: () => activatePrevious(index),
+      activateNext: () => activateNext(index),
+    })
   }
 })

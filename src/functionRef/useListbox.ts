@@ -1,12 +1,9 @@
 import { ref, watch, computed, onMounted, onBeforeUpdate } from 'vue'
 import { bind, on } from '@baleada/vue-features'
 
-export function useListbox () {
-  const rootElement = ref<HTMLElement>()
-  const rootRef = (element: HTMLElement) => {
-    rootElement.value = element
-  }
+let totalIds = 0
 
+export function useListbox () {
   const optionsElements = ref<HTMLElement[]>([])
   const getOptionRef = (index: number) => (element: HTMLElement) => {
     optionsElements.value[index] = element
@@ -17,7 +14,8 @@ export function useListbox () {
 
   const ids = ref([])
   
-  onMounted(() => ids.value = optionsElements.value.map(() => `function-ref-listbox-option-${totalIds++}`))
+  onMounted(() => ids.value = optionsElements.value
+    .map(() => 'function-ref-listbox-option-' + totalIds++))
 
   bind({
     element: optionsElements,
@@ -25,6 +23,11 @@ export function useListbox () {
       id: ({ index }) => ids.value[index],
     }
   })
+
+  const rootElement = ref<HTMLElement>()
+  const rootRef = (element: HTMLElement) => {
+    rootElement.value = element
+  }
 
   bind({
     element: rootElement,
@@ -165,5 +168,3 @@ export function useListbox () {
     getOptionRef,
   }
 }
-
-let totalIds = 0
