@@ -1,4 +1,4 @@
-import { defineComponent, h, provide, inject, ref, watch, computed, onBeforeUpdate } from 'vue'
+import { defineComponent, h, provide, inject, ref, watch, computed, onMounted, onBeforeUpdate } from 'vue'
 import type { PropType } from 'vue'
 
 const ListboxSymbol = Symbol('Listbox')
@@ -24,11 +24,8 @@ export const Listbox = defineComponent({
 
     onBeforeUpdate(() => optionsElements.value = [])
 
-    const ids = ref<string[]>([])
-
-    const storeId = (index: number, id: string) => {
-      ids.value[index] = id
-    }
+    const ids = ref([])
+    onMounted(() => ids.value = optionsElements.value.map(() => `compound-listbox-option-${totalIds++}`))
     
     const active = ref(0)
     const ariaActivedescendant = computed(() => ids.value[active.value])
@@ -78,7 +75,7 @@ export const Listbox = defineComponent({
     provide(ListboxSymbol, {
       options: props.options,
       storeOptionsElement,
-      storeId,
+      ids,
       activate,
       activatePrevious,
       activateNext,
@@ -87,14 +84,16 @@ export const Listbox = defineComponent({
       isSelected,
     })
 
+    const bindings = computed(() => ({
+      role: 'listbox',
+      'aria-orientation': 'vertical',
+      'aria-activedescendant': ariaActivedescendant.value,
+      tabindex: -1,
+    }))
+
     return () => h(
       () => slots.default({
-        bindings: {
-          role: 'listbox',
-          ariaOrientation: 'vertical',
-          ariaActivedescendant: ariaActivedescendant.value,
-          tabindex: -1,
-        },
+        bindings: bindings.value,
         active,
         activate,
         selected,
@@ -115,7 +114,7 @@ export const ListboxOption = defineComponent({
     const {
       options,
       storeOptionsElement,
-      storeId,
+      ids,
       activate,
       activatePrevious,
       activateNext,
@@ -126,15 +125,14 @@ export const ListboxOption = defineComponent({
 
     const index = options.indexOf(props.option)
     
-    const id = `compound-listbox-option-${totalIds++}`
-    storeId(props.option, id)
+    const id = computed(() => ids.value[index])
 
     return () => h(
       () => slots.default({
         bindings: {
           role: 'option',
           id,
-          ariaSelected: isSelected(index),
+          'aria-selected': isSelected(index),
           tabindex: isSelected(index) ? 0 : -1,
           ref: el => storeOptionsElement(index, el),
           onMouseenter: () => activate(index),

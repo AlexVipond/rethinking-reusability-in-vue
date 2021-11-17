@@ -17,7 +17,7 @@
         transition duration-150 focus:border-none focus:outline-none
       "
       :class="{
-        'bg-primary-200 text-primary-900': listbox.isActive(index),
+        'bg-emerald-200 text-emerald-900': listbox.isActive(index),
       }"
     >
       <span>{{ option }}</span>

@@ -27,14 +27,14 @@
             transition duration-150 focus:border-none focus:outline-none
           "
           :class="{
-            'bg-primary-200 text-primary-900': isActive(),
+            'bg-red-200 text-red-900': isActive(),
           }"
         >
           <span>{{ option }}</span>
           <CheckIcon
             v-show="isSelected()"
             class="h-[1em] w-[1em]"
-            :class="{ 'text-emerald-900': isActive() }"
+            :class="{ 'text-red-900': isActive() }"
           />
         </li>
       </ListboxOption>
