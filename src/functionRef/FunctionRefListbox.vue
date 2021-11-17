@@ -10,7 +10,7 @@
     <li
       v-for="(option, index) in options"
       :key="option"
-      :ref="listbox.getOptionsRef(index)"
+      :ref="listbox.getOptionRef(index)"
       class="
         text-lg
         flex items-center gap-3 p-2
@@ -23,18 +23,33 @@
       <span>{{ option }}</span>
       <CheckIcon
         v-show="listbox.isSelected(index)"
-        :class="[listbox.isActive(index) ? 'text-emerald-900' : 'text-primary-500'"
+        class="h-[1em] w-[1em]"
+        :class="{ 'text-emerald-900': listbox.isActive(index) }"
       />
     </li>
   </ul>
 </template>
 
 <script setup lang="ts">
+import { watchEffect } from 'vue'
 import { CheckIcon } from '@heroicons/vue/solid'
 import { useListbox } from './useListbox'
-import { options } from '../options'
 
-// TODO: Controlled
+// Set up all listbox state management and methods
+const listbox = useListbox()
 
-const listbox = useListbox(options)
+
+// To make this into a controlled component:
+// - Configure props and emit
+// - Set up watcher to emit selected option
+const props = defineProps<{
+  options: string[],
+  modelValue: string,
+}>()
+
+const emit = defineEmits<{
+  (e: 'update:modelValue', option: string): void,
+}>()
+
+watchEffect(() => emit('update:modelValue', props.options[listbox.selected.value]))
 </script>
