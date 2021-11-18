@@ -18,7 +18,7 @@ export const Listbox = defineComponent({
       type: String,
     },
   },
-  setup (props, { slots, emit, expose }) {
+  setup (props, { slots, emit }) {
     const optionsElements = ref<HTMLElement[]>([])
     
     const storeOptionsElement = (index: number, element: HTMLElement) => {
