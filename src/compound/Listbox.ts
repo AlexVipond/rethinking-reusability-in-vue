@@ -21,8 +21,8 @@ export const Listbox = defineComponent({
   setup (props, { slots, emit }) {
     const ids = shallowRef<{ [option: string]: string }>({})
 
-    for (const option of props.options) {
-      ids.value[option] = 'compound-listbox-option-' + totalIds++
+    const storeId = (option: string, id: string) => {
+      ids.value[option] = id
     }
     
     const active = ref(props.options[0])
@@ -76,7 +76,7 @@ export const Listbox = defineComponent({
 
     provide(ListboxSymbol, {
       options: props.options,
-      ids,
+      storeId,
       active,
       activate,
       activatePrevious,
@@ -117,7 +117,7 @@ export const ListboxOption = defineComponent({
   },
   setup (props, { slots }) {
     const {
-      ids,
+      storeId,
       active,
       activate,
       activatePrevious,
@@ -132,7 +132,8 @@ export const ListboxOption = defineComponent({
 
     const getEl = shallowRef<() => HTMLElement>()
     
-    const id = ids.value[props.option]
+    const id = 'compound-listbox-option-' + totalIds++
+    storeId(props.option, id)
 
     watch(
       [active, selected],
