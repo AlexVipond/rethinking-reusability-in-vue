@@ -75,7 +75,6 @@ export const Listbox = defineComponent({
     }
 
     provide(ListboxSymbol, {
-      options: props.options,
       storeId,
       active,
       activate,
@@ -89,15 +88,13 @@ export const Listbox = defineComponent({
       isSelected,
     })
 
-    const bindings = computed(() => ({
-      role: 'listbox',
-      'aria-orientation': 'vertical',
-      'aria-activedescendant': ariaActivedescendant.value,
-      tabindex: -1,
-    }))
-
     return () => slots.default({
-      bindings: bindings.value,
+      bindings: {
+        role: 'listbox',
+        'aria-orientation': 'vertical',
+        'aria-activedescendant': ariaActivedescendant.value,
+        tabindex: -1,
+      },
       active,
       activate,
       activateFirst,
@@ -130,10 +127,11 @@ export const ListboxOption = defineComponent({
       isSelected,
     } = inject(ListboxSymbol)
 
-    const getEl = shallowRef<() => HTMLElement>()
     
     const id = 'compound-listbox-option-' + totalIds++
     storeId(props.option, id)
+    
+    const getEl = shallowRef<() => HTMLElement>()
 
     watch(
       [active, selected],
@@ -150,10 +148,10 @@ export const ListboxOption = defineComponent({
         bindings: {
           role: 'option',
           id,
-          'aria-selected': isSelected(props.option),
           tabindex: isSelected(props.option) ? 0 : -1,
-          onMouseenter: () => activate(props.option),
+          'aria-selected': isSelected(props.option),
           onClick: () => select(props.option),
+          onMouseenter: () => activate(props.option),
           onKeydown: event => {
             switch (event.key) {
               case 'ArrowUp':
@@ -181,9 +179,9 @@ export const ListboxOption = defineComponent({
           },
         },
         isActive: () => isActive(props.option),
-        isSelected: () => isSelected(props.option),
         activatePrevious: () => activatePrevious(props.option),
         activateNext: () => activateNext(props.option),
+        isSelected: () => isSelected(props.option),
       })
 
       getEl.value = () => rendered[0].el as HTMLElement

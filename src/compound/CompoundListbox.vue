@@ -3,7 +3,7 @@
     :options="options"
     :modelValue="modelValueProxy"
     @update:modelValue="option => modelValueProxy = option"
-    v-slot="{ bindings, active, activate, selected, select }"
+    v-slot="{ bindings, active, activate, activateFirst, activateLast, selected, select }"
   >
     <ul
       v-bind="bindings"
