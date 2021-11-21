@@ -170,7 +170,7 @@ export function useListbox () {
   })
 
   return {
-    active, activate, activatePrevious, activateNext, isActive,
+    active, activate, activatePrevious, activateNext, activateFirst, activateLast, isActive,
     selected, select, isSelected,
     rootRef,
     getOptionRef,
