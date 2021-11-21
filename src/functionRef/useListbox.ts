@@ -1,9 +1,14 @@
-import { ref, watch, computed, onMounted, onBeforeUpdate } from 'vue'
+import { ref, shallowRef, watch, computed, onMounted, onBeforeUpdate } from 'vue'
 import { bind, on } from '@baleada/vue-features'
 
 let totalIds = 0
 
 export function useListbox () {
+  const rootElement = ref<HTMLElement>()
+  const rootRef = (element: HTMLElement) => {
+    rootElement.value = element
+  }
+
   const optionsElements = ref<HTMLElement[]>([])
   const getOptionRef = (index: number) => (element: HTMLElement) => {
     optionsElements.value[index] = element
@@ -12,7 +17,7 @@ export function useListbox () {
     optionsElements.value = []
   })
 
-  const ids = ref([])
+  const ids = shallowRef([])
   
   onMounted(() => ids.value = optionsElements.value
     .map(() => 'function-ref-listbox-option-' + totalIds++))
@@ -23,11 +28,6 @@ export function useListbox () {
       id: ({ index }) => ids.value[index],
     }
   })
-
-  const rootElement = ref<HTMLElement>()
-  const rootRef = (element: HTMLElement) => {
-    rootElement.value = element
-  }
 
   bind({
     element: rootElement,
@@ -65,6 +65,14 @@ export function useListbox () {
     active.value = index + 1
   }
 
+  const activateFirst = () => {
+    active.value = 0
+  }
+
+  const activateLast = () => {
+    active.value = optionsElements.value.length - 1
+  }
+
   const isActive = (index: number) => {
     return index === active.value
   }
@@ -79,11 +87,11 @@ export function useListbox () {
     effects: {
       'cmd+down': event => {
         event.preventDefault()
-        activate(optionsElements.value.length - 1)
+        activateLast()
       },
       'cmd+up': event => {
         event.preventDefault()
-        activate(0)
+        activateFirst()
       },
       mouseenter: {
         createEffect: ({ index }) => () => activate(index),
