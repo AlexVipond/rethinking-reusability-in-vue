@@ -1,5 +1,5 @@
 <template>
-  <main class="h-screen w-screen grid grid-cols-1 md:grid-cols-2 items-center justify-center p-8 md:p-16">
+  <main class="h-screen w-screen grid grid-cols-1 md:grid-cols-2 items-center justify-center p-8 md:p-16 bg-gray-200">
     <section class="w-full max-w-sm flex flex-col gap-4">
       <h2 class="text-sm tracking-widest font-bold uppercase">Compound listbox</h2>
       <CompoundListbox :options="options" v-model="compoundSelected"/>
