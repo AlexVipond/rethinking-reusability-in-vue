@@ -5,7 +5,7 @@ This repo contains source code for the [Rethinking Reusability in Vue](https://r
 - [`Listbox` compound component](https://github.com/AlPalLLC/rethinking-reusability-in-vue/blob/main/src/compound/Listbox.ts)
 - [`useListbox` function ref composable](https://github.com/AlPalLLC/rethinking-reusability-in-vue/blob/main/src/functionRef/useListbox.ts)
 
-To see live demos of the compound component and function ref composable from the book, [visit the demos page](https://rethinking-reusability-in-vue0-demos.alexvipond.dev), or follow instructions below to run a Vite app locally.
+To see live demos of the compound component and function ref composable from the book, [visit the demos page](https://rethinking-reusability-in-vue-demos.alexvipond.dev), or follow instructions below to run a Vite app locally.
 
 
 ## Running locally
