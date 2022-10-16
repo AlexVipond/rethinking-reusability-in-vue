@@ -14,10 +14,10 @@ svg {
   @apply text-emerald-500;
 }
 
-.active {
+.focused {
   @apply bg-emerald-200 text-emerald-900;
 }
 
-.active svg {
+.focused svg {
   @apply text-emerald-900;
 }
