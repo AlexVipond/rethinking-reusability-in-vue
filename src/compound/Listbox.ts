@@ -1,10 +1,24 @@
 import {
   defineComponent, provide, inject,
-  shallowRef, ref, watch, computed
+  ref, watch, computed
 } from 'vue'
-import type { PropType } from 'vue'
+import type { PropType, InjectionKey, Ref } from 'vue'
 
-const ListboxSymbol = Symbol('Listbox')
+const ListboxSymbol: InjectionKey<ListboxProvided> = Symbol('Listbox')
+
+type ListboxProvided = {
+  storeId: (option: string, id: string) => void,
+  focused: Ref<string>,
+  focus: (option: string) => void,
+  focusPrevious: (option: string) => void,
+  focusNext: (option: string) => void,
+  focusFirst: () => void,
+  focusLast: () => void,
+  isFocused: (option: string) => boolean,
+  selected: Ref<string>,
+  select: (option: string) => void,
+  isSelected: (option: string) => boolean,
+}
 
 let totalIds = 0
 
@@ -19,49 +33,49 @@ export const Listbox = defineComponent({
     },
   },
   setup (props, { slots, emit }) {
-    const ids = shallowRef<{ [option: string]: string }>({})
+    const ids = ref<{ [option: string]: string }>({})
 
     const storeId = (option: string, id: string) => {
       ids.value[option] = id
     }
     
-    const active = ref(props.options[0])
-    const ariaActivedescendant = computed(() => ids.value[active.value])
+    const focused = ref(props.options[0])
+    const ariaActivedescendant = computed(() => ids.value[focused.value])
 
-    const activate = (option: string) => {
-      active.value = option
+    const focus = (option: string) => {
+      focused.value = option
     }
 
-    const activatePrevious = (option: string) => {
+    const focusPrevious = (option: string) => {
       const index = props.options.indexOf(option)
 
       if (index === 0) {
         return
       }
 
-      active.value = props.options[index - 1]
+      focused.value = props.options[index - 1]
     }
 
-    const activateNext = (option: string) => {
+    const focusNext = (option: string) => {
       const index = props.options.indexOf(option)
 
       if (index === props.options.length - 1) {
         return
       }
 
-      active.value = props.options[index + 1]
+      focused.value = props.options[index + 1]
     }
 
-    const activateFirst = () => {
-      active.value = props.options[0]
+    const focusFirst = () => {
+      focused.value = props.options[0]
     }
 
-    const activateLast = () => {
-      active.value = props.options[props.options.length - 1]
+    const focusLast = () => {
+      focused.value = props.options[props.options.length - 1]
     }
 
-    const isActive = (option: string) => {
-      return option === active.value
+    const isFocused = (option: string) => {
+      return option === focused.value
     }
 
     const selected = computed(() => props.modelValue)
@@ -76,13 +90,13 @@ export const Listbox = defineComponent({
 
     provide(ListboxSymbol, {
       storeId,
-      active,
-      activate,
-      activatePrevious,
-      activateNext,
-      activateFirst,
-      activateLast,
-      isActive,
+      focused,
+      focus,
+      focusPrevious,
+      focusNext,
+      focusFirst,
+      focusLast,
+      isFocused,
       selected,
       select,
       isSelected,
@@ -95,10 +109,10 @@ export const Listbox = defineComponent({
         'aria-activedescendant': ariaActivedescendant.value,
         tabindex: -1,
       },
-      active,
-      activate,
-      activateFirst,
-      activateLast,
+      focused,
+      focus,
+      focusFirst,
+      focusLast,
       selected,
       select,
     })
@@ -115,28 +129,27 @@ export const ListboxOption = defineComponent({
   setup (props, { slots }) {
     const {
       storeId,
-      active,
-      activate,
-      activatePrevious,
-      activateNext,
-      activateFirst,
-      activateLast,
-      isActive,
+      focused,
+      focus,
+      focusPrevious,
+      focusNext,
+      focusFirst,
+      focusLast,
+      isFocused,
       selected,
       select,
       isSelected,
     } = inject(ListboxSymbol)
-
     
     const id = 'compound-listbox-option-' + totalIds++
     storeId(props.option, id)
     
-    const getEl = shallowRef<() => HTMLElement>()
+    const getEl = ref<() => HTMLElement>()
 
     watch(
-      [active, selected],
+      [focused, selected],
       () => {
-        if (isActive(props.option)) {
+        if (isFocused(props.option)) {
           getEl.value().focus()
         }
       },
@@ -151,24 +164,24 @@ export const ListboxOption = defineComponent({
           tabindex: isSelected(props.option) ? 0 : -1,
           'aria-selected': isSelected(props.option),
           onClick: () => select(props.option),
-          onMouseenter: () => activate(props.option),
+          onMouseenter: () => focus(props.option),
           onKeydown: event => {
             switch (event.key) {
               case 'ArrowUp':
                 event.preventDefault()
                 if (event.metaKey) {
-                  activateFirst()
+                  focusFirst()
                   break
                 }
-                activatePrevious(props.option)
+                focusPrevious(props.option)
                 break
               case 'ArrowDown':
                 event.preventDefault()
                 if (event.metaKey) {
-                  activateLast()
+                  focusLast()
                   break
                 }
-                activateNext(props.option)
+                focusNext(props.option)
                 break
               case 'Enter':
               case ' ':
@@ -178,9 +191,9 @@ export const ListboxOption = defineComponent({
             }
           },
         },
-        isActive: () => isActive(props.option),
-        activatePrevious: () => activatePrevious(props.option),
-        activateNext: () => activateNext(props.option),
+        isFocused: () => isFocused(props.option),
+        focusPrevious: () => focusPrevious(props.option),
+        focusNext: () => focusNext(props.option),
         isSelected: () => isSelected(props.option),
       })
 

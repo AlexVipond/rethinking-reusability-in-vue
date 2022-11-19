@@ -3,18 +3,16 @@
     "dev": "vite",
     "build": "vite build"
   },
-  "devDependencies": {
-    "@vitejs/plugin-vue": "^1.9.3",
-    "autoprefixer": "^10.3.4",
-    "postcss": "^8.3.6",
-    "tailwindcss": "^3.0.0-alpha.1",
-    "vite": "^2.6.11"
-  },
   "dependencies": {
-    "@alexvipond/mulago-foundation-portfolio": "*",
-    "@baleada/vue-features": "^0.10.4",
-    "@fontsource/inter": "^4.5.0",
-    "@heroicons/vue": "^1.0.5",
-    "vue": "^3.2.20"
+    "@alexvipond/mulago-foundation-portfolio": "^0.0.2",
+    "@baleada/vue-features": "^0.13.12",
+    "@fontsource/inter": "^4.5.14",
+    "@heroicons/vue": "^2.0.12",
+    "@vitejs/plugin-vue": "^3.1.2",
+    "autoprefixer": "^10.4.12",
+    "postcss": "^8.4.18",
+    "tailwindcss": "^3.1.8",
+    "vite": "^3.1.8",
+    "vue": "^3.2.41"
   }
 }

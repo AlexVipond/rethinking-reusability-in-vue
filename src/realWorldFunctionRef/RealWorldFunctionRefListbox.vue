@@ -1,6 +1,6 @@
 <template>
   <ul
-    :ref="listbox.rootRef"
+    :ref="listbox.root.ref"
     class="
       w-full h-96
       flex flex-col gap-3 overflow-scroll
@@ -10,21 +10,21 @@
     <li
       v-for="(option, index) in options"
       :key="option"
-      :ref="listbox.getOptionRef(index)"
+      :ref="listbox.options.getRef(index)"
       class="
         text-lg
         flex items-center gap-3 p-2
         transition duration-150 focus:border-none focus:outline-none
       "
       :class="{
-        'bg-emerald-200 text-emerald-900': listbox.isFocused(index),
+        'bg-indigo-200 text-indigo-900': listbox.is.focused(index),
       }"
     >
       <span>{{ option }}</span>
       <CheckIcon
-        v-show="listbox.isSelected(index)"
+        v-show="listbox.is.selected(index)"
         class="h-[1em] w-[1em]"
-        :class="{ 'text-emerald-900': listbox.isFocused(index) }"
+        :class="{ 'text-indigo-900': listbox.is.focused(index) }"
       />
     </li>
   </ul>
@@ -33,7 +33,7 @@
 <script setup lang="ts">
 import { watchEffect } from 'vue'
 import { CheckIcon } from '@heroicons/vue/24/solid'
-import { useListbox } from './useListbox'
+import { useListbox } from '@baleada/vue-features'
 
 // Set up all listbox state management and methods
 const listbox = useListbox()

@@ -1,4 +1,7 @@
-import { ref, shallowRef, watch, computed, onMounted, onBeforeUpdate } from 'vue'
+import {
+  ref, watch, computed,
+  onMounted, onBeforeUpdate
+} from 'vue'
 import { bind, on } from '@baleada/vue-features'
 
 let totalIds = 0
@@ -17,99 +20,96 @@ export function useListbox () {
     optionsElements.value = []
   })
 
-  const ids = shallowRef([])
+  const ids = ref([])
   
   onMounted(() => ids.value = optionsElements.value
     .map(() => 'function-ref-listbox-option-' + totalIds++))
 
-  bind({
-    element: optionsElements,
-    values: {
-      id: ({ index }) => ids.value[index],
+  bind(
+    optionsElements,
+    {
+      id: index => ids.value[index],
     }
-  })
+  )
 
-  bind({
-    element: rootElement,
-    values: {
+  bind(
+    rootElement,
+    {
       role: 'listbox',
       ariaOrientation: 'vertical'
     }
-  })
+  )
 
-  bind({
-    element: optionsElements,
-    values: { role: 'option' }
-  })
+  bind(
+    optionsElements,
+    { role: 'option' }
+  )
 
-  const active = ref(0)
-  const ariaActivedescendant = computed(() => ids.value[active.value])
+  const focused = ref(0)
+  const ariaActivedescendant = computed(() => ids.value[focused.value])
 
-  const activate = (index: number) => {
-    active.value = index
+  const focus = (index: number) => {
+    focused.value = index
   }
 
-  const activatePrevious = (index: number) => {
+  const focusPrevious = (index: number) => {
     if (index === 0) {
       return
     }
 
-    active.value = index - 1
+    focused.value = index - 1
   }
 
-  const activateNext = (index: number) => {
+  const focusNext = (index: number) => {
     if (index === optionsElements.value.length - 1) {
       return
     }
 
-    active.value = index + 1
+    focused.value = index + 1
   }
 
-  const activateFirst = () => {
-    active.value = 0
+  const focusFirst = () => {
+    focused.value = 0
   }
 
-  const activateLast = () => {
-    active.value = optionsElements.value.length - 1
+  const focusLast = () => {
+    focused.value = optionsElements.value.length - 1
   }
 
-  const isActive = (index: number) => {
-    return index === active.value
+  const isFocused = (index: number) => {
+    return index === focused.value
   }
 
-  bind({
-    element: rootElement,
-    values: { ariaActivedescendant }
-  })
+  bind(
+    rootElement,
+    { ariaActivedescendant }
+  )
 
-  on<any>({
-    element: optionsElements,
-    effects: {
-      'cmd+down': event => {
-        event.preventDefault()
-        activateLast()
-      },
-      'cmd+up': event => {
-        event.preventDefault()
-        activateFirst()
+  on(
+    optionsElements,
+    {
+      keydown: {
+        createEffect: index => (event, { is }) => {
+          if (is('cmd+down')) {
+            event.preventDefault()
+            focusLast()
+          } else if (is('cmd+up')) {
+            event.preventDefault()
+            focusFirst()
+          } else if (is('down')) {
+            event.preventDefault()
+            focusNext(index)
+          } else if (is('up')) {
+            event.preventDefault()
+            focusPrevious(index)
+          }
+        }
       },
       mouseenter: {
-        createEffect: ({ index }) => () => activate(index),
-      },
-      down: {
-        createEffect: ({ index }) => event => {
-          event.preventDefault()
-          activateNext(index)
-        }
-      },
-      up: {
-        createEffect: ({ index }) => event => {
-          event.preventDefault()
-          activatePrevious(index)
-        }
+        createEffect: index => event => focus(index),
       },
     }
-  })
+  )
 
   const selected = ref(0)
 
@@ -121,56 +121,58 @@ export function useListbox () {
     return index === selected.value
   }
 
-  bind({
-    element: optionsElements,
-    values: {
+  bind(
+    optionsElements,
+    {
       ariaSelected: {
-        get: ({ index }) => isSelected(index) || undefined,
-        watchSources: selected,
+        get: index => isSelected(index) || undefined,
+        watchSource: selected,
       },
     }
-  })
+  )
   
-  on<any>({
-    element: optionsElements,
-    effects: {
+  on(
+    optionsElements,
+    {
       click: {
-        createEffect: ({ index }) => () => select(index),
+        createEffect: index => () => select(index),
       },
-      space: {
-        createEffect: ({ index }) => () => select(index),
-      },
-      enter: {
-        createEffect: ({ index }) => () => select(index),
-      },
+      keydown: {
+        createEffect: index => (event, { is }) => {
+          if (is('space') || is('enter')) {
+            event.preventDefault()
+            select(index)
+          }
+        }
+      }
     }
-  })
+  )
 
   onMounted(() => {
     watch(
-      active,
-      () => optionsElements.value[active.value].focus(),
+      focused,
+      () => optionsElements.value[focused.value].focus(),
       { flush: 'post' }
     )
   })
 
-  bind({
-    element: rootElement,
-    values: { tabindex: -1 },
-  })
+  bind(
+    rootElement,
+    { tabindex: -1 },
+  )
 
-  bind({
-    element: optionsElements,
-    values: {
+  bind(
+    optionsElements,
+    {
       tabindex: {
-        get: ({ index }) => isSelected(index) ? 0 : -1,
-        watchSources: selected,
+        get: index => isSelected(index) ? 0 : -1,
+        watchSource: selected,
       },
     }
-  })
+  )
 
   return {
-    active, activate, activatePrevious, activateNext, activateFirst, activateLast, isActive,
+    focused, focus, focusPrevious, focusNext, focusFirst, focusLast, isFocused,
     selected, select, isSelected,
     rootRef,
     getOptionRef,

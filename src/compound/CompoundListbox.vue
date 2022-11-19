@@ -3,7 +3,7 @@
     :options="options"
     :modelValue="modelValueProxy"
     @update:modelValue="option => modelValueProxy = option"
-    v-slot="{ bindings, active, activate, activateFirst, activateLast, selected, select }"
+    v-slot="{ bindings, focused, focus, focusFirst, focusLast, selected, select }"
   >
     <ul
       v-bind="bindings"
@@ -17,7 +17,7 @@
         v-for="option in options"
         :key="option"
         :option="option"
-        v-slot="{ bindings, isActive, isSelected, activatePrevious, activateNext }"
+        v-slot="{ bindings, isFocused, isSelected, focusPrevious, focusNext }"
       >
         <li
           v-bind="bindings"
@@ -27,14 +27,14 @@
             transition duration-150 focus:border-none focus:outline-none
           "
           :class="{
-            'bg-red-200 text-red-900': isActive(),
+            'bg-red-200 text-red-900': isFocused(),
           }"
         >
           <span>{{ option }}</span>
           <CheckIcon
             v-show="isSelected()"
             class="h-[1em] w-[1em]"
-            :class="{ 'text-red-900': isActive() }"
+            :class="{ 'text-red-900': isFocused() }"
           />
         </li>
       </ListboxOption>
@@ -44,7 +44,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { CheckIcon } from '@heroicons/vue/solid'
+import { CheckIcon } from '@heroicons/vue/24/solid'
 import { Listbox, ListboxOption } from './Listbox'
 
 // This component only makes sense as a controlled component,
